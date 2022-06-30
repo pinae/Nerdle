@@ -1,0 +1,76 @@
+.headingcontainer h1 {
+    font-size: 8em;
+    font-weight: bold;
+    text-align: center;
+}
+
+.headingcontainer h3 {
+    font-size: 2.16em;
+    font-weight: lighter;
+    text-align: center;
+    margin-top: -1.5em;
+}
+
+.board {
+    margin: 1em;
+    text-align: center;
+}
+
+.board .row {
+    margin-bottom: 0.2em;
+}
+
+.board .tile {
+    border: 2px solid dimgray;
+    font-size: 2em;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 2em;
+    font-weight: bold;
+    vertical-align: middle;
+    box-sizing: border-box;
+    width: 2em;
+}
+
+.board .tile::before {
+    content: "";
+    display: inline-block;
+    padding-bottom: 100%;
+}
+
+.board .nailedit {
+    background-color: green;
+}
+
+.board .somewhere {
+    background-color: yellow;
+}
+
+.board .nope {
+    background-color: gray;
+}
+
+#keyboard {
+    margin: 1em;
+    text-align: center;
+}
+
+#keyboard .row div {
+    display: inline-block;
+    padding: 0.8em;
+    background: lightgray;
+    border-radius: 0.3em;
+    cursor: pointer;
+    margin: 0.17em;
+    line-height: 1.7em;
+    user-select: none;
+}
+
+#keyboard .row div:hover {
+    background-color: aquamarine;
+}
+
+#keyboard .row div svg {
+    display: inline-block;
+}

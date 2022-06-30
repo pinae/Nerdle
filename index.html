@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nerdle - Das Worträtsel für c’t-Fans</title>
+    <link rel="stylesheet" href="nerdle-styles.css">
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+</head>
+<body>
+    <div class="headingcontainer">
+        <h1>Nerdle</h1>
+        <h3>Das Worträtsel für c’t-Fans</h3>
+    </div>
+    <div class="board">
+        <div class="row">
+            <div class="tile" id="t00">&nbsp;</div>
+            <div class="tile" id="t01">&nbsp;</div>
+            <div class="tile" id="t02">&nbsp;</div>
+            <div class="tile" id="t03">&nbsp;</div>
+            <div class="tile" id="t04">&nbsp;</div>
+        </div>
+        <div class="row">
+            <div class="tile" id="t10">&nbsp;</div>
+            <div class="tile" id="t11">&nbsp;</div>
+            <div class="tile" id="t12">&nbsp;</div>
+            <div class="tile" id="t13">&nbsp;</div>
+            <div class="tile" id="t14">&nbsp;</div>
+        </div>
+        <div class="row">
+            <div class="tile" id="t20">&nbsp;</div>
+            <div class="tile" id="t21">&nbsp;</div>
+            <div class="tile" id="t22">&nbsp;</div>
+            <div class="tile" id="t23">&nbsp;</div>
+            <div class="tile" id="t24">&nbsp;</div>
+        </div>
+        <div class="row">
+            <div class="tile" id="t30">&nbsp;</div>
+            <div class="tile" id="t31">&nbsp;</div>
+            <div class="tile" id="t32">&nbsp;</div>
+            <div class="tile" id="t33">&nbsp;</div>
+            <div class="tile" id="t34">&nbsp;</div>
+        </div>
+        <div class="row">
+            <div class="tile" id="t40">&nbsp;</div>
+            <div class="tile" id="t41">&nbsp;</div>
+            <div class="tile" id="t42">&nbsp;</div>
+            <div class="tile" id="t43">&nbsp;</div>
+            <div class="tile" id="t44">&nbsp;</div>
+        </div>
+        <div class="row">
+            <div class="tile" id="t50">&nbsp;</div>
+            <div class="tile" id="t51">&nbsp;</div>
+            <div class="tile" id="t52">&nbsp;</div>
+            <div class="tile" id="t53">&nbsp;</div>
+            <div class="tile" id="t54">&nbsp;</div>
+        </div>
+    </div>
+    <div id="keyboard">
+        <div class="row">
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>0</div><div><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" class="game-icon"><path
+                    fill="var(--color-tone-1)" d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H7.07L2.4 12l4.66-7H22v14zm-11.59-2L14 13.41 17.59 17 19 15.59 15.41 12 19 8.41 17.59 7 14 10.59 10.41 7 9 8.41 12.59 12 9 15.59z"></path></svg></div>
+        </div>
+        <div class="row">
+            <div>Q</div><div>W</div><div>E</div><div>R</div><div>T</div><div>Z</div><div>U</div><div>I</div><div>O</div><div>P</div><div>Ü</div>
+        </div>
+        <div class="row">
+            <div>A</div><div>S</div><div>D</div><div>F</div><div>G</div><div>H</div><div>J</div><div>K</div><div>L</div><div>Ö</div><div>Ä</div>
+        </div>
+        <div class="row">
+            <div>Y</div><div>X</div><div>C</div><div>V</div><div>B</div><div>N</div><div>M</div><div>/</div><div>ß</div><div>;</div><div style="font-size: 70%; line-height: 200%">ENTER</div>
+        </div>
+    </div>
+<py-env>
+</py-env>
+<py-script>
+from js import document, console
+from pyodide import create_proxy
+import random
+
+wortliste = ["ASCII",
+             "Admin",
+             "Arial",
+             "Audio",
+             "Aztec",
+             "BASIC",
+             "Bytes",
+             "Cobol",
+             "Codec",
+             "DENIC",
+             "DSGVO",
+             "NoSQL",
+             "Emacs",
+             "Ether",
+             "Forth",
+             "Frame",
+             "Gates",
+             "Genom",
+             "GeoIP",
+             "HTTPS",
+             "Index",
+             "Intel",
+             "Knuth",
+             "LaTeX",
+             "Layer",
+             "Linux",
+             "Modul",
+             "Notch",
+             "Nudol",
+             "OCaml",
+             "Orbit",
+             "Paket",
+             "Pixel",
+             "Raspi",
+             "Raute",
+             "Regex",
+             "Scala",
+             "Scapy",
+             "Shell",
+             "Sinus",
+             "Skill",
+             "Slash",
+             "Swift",
+             "TIOBE",
+             "Theme",
+             "Token",
+             "Video",
+             "Virus",
+             "macOS"]
+word = random.choice(wortliste).upper()
+
+console.log("Wort: ", " ".join(list(word.upper())))
+
+guess = ""
+guess_no = 0
+
+def display_guess():
+    for i in range(5):
+        document.getElementById("t{:d}{:d}".format(guess_no, i)).textContent = "&nbsp;"
+    for pos, char in enumerate(list(guess)):
+        document.getElementById("t{:d}{:d}".format(guess_no, pos)).textContent = char
+
+def evaluate_guess():
+    global word, guess
+    for pos, char in enumerate(list(guess)):
+        console.log("evaluate: ", guess, word, pos, char, word[pos])
+        if char == word[pos]:
+            document.getElementById("t{:d}{:d}".format(guess_no, pos)).classList.add("nailedit")
+            continue
+        if char in word:
+            document.getElementById("t{:d}{:d}".format(guess_no, pos)).classList.add("somewhere")
+        else:
+            document.getElementById("t{:d}{:d}".format(guess_no, pos)).classList.add("nope")
+
+def keypress(e):
+    global guess, guess_no
+    console.log("Keypress: ", e.target.textContent, guess)
+    match len(e.target.textContent):
+        case 0:
+            guess = guess[:-1]
+        case 1:
+            guess += e.target.textContent
+        case _:
+            if len(guess) == 5:
+                evaluate_guess()
+                guess = ""
+                guess_no += 1
+    display_guess()
+
+js_keypress = create_proxy(keypress)
+
+for key in document.getElementById("keyboard").childNodes:
+    key.addEventListener("click", js_keypress)
+
+</py-script>
+</body>
+</html>
