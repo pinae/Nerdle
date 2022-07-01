@@ -11,6 +11,20 @@
     margin-top: -1.5em;
 }
 
+.infoblock {
+    margin: 2em;
+}
+
+#error {
+    font-weight: bold;
+    color: darkred;
+    text-align: center;
+}
+
+#info {
+    text-align: center;
+}
+
 .board {
     margin: 1em;
     text-align: center;
@@ -39,15 +53,15 @@
     padding-bottom: 100%;
 }
 
-.board .nailedit {
+.board .nailedit, #keyboard .row div.nailedit {
     background-color: green;
 }
 
-.board .somewhere {
+.board .somewhere, #keyboard .row div.somewhere {
     background-color: yellow;
 }
 
-.board .nope {
+.board .nope, #keyboard .row div.nope {
     background-color: gray;
 }
 

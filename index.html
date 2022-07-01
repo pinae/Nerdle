@@ -12,6 +12,10 @@
         <h1>Nerdle</h1>
         <h3>Das Worträtsel für c’t-Fans</h3>
     </div>
+    <div class="infoblock">
+        <div id="error" style="display: none"></div>
+        <div id="info" style="display: none"></div>
+    </div>
     <div class="board">
         <div class="row">
             <div class="tile" id="t00">&nbsp;</div>
@@ -78,61 +82,62 @@ from js import document, console
 from pyodide import create_proxy
 import random
 
-wortliste = ["ASCII",
-             "Admin",
-             "Arial",
-             "Audio",
-             "Aztec",
-             "BASIC",
-             "Bytes",
-             "Cobol",
-             "Codec",
-             "DENIC",
-             "DSGVO",
-             "NoSQL",
-             "Emacs",
-             "Ether",
-             "Forth",
-             "Frame",
-             "Gates",
-             "Genom",
-             "GeoIP",
-             "HTTPS",
-             "Index",
-             "Intel",
-             "Knuth",
-             "LaTeX",
-             "Layer",
-             "Linux",
-             "Modul",
-             "Notch",
-             "Nudol",
-             "OCaml",
-             "Orbit",
-             "Paket",
-             "Pixel",
-             "Raspi",
-             "Raute",
-             "Regex",
-             "Scala",
-             "Scapy",
-             "Shell",
-             "Sinus",
-             "Skill",
-             "Slash",
-             "Swift",
-             "TIOBE",
-             "Theme",
-             "Token",
-             "Video",
-             "Virus",
-             "macOS"]
-word = random.choice(wortliste).upper()
+wordlist = ['ASCII',
+            'ADMIN',
+            'ARIAL',
+            'AUDIO',
+            'AZTEC',
+            'BASIC',
+            'BYTES',
+            'COBOL',
+            'CODEC',
+            'DENIC',
+            'DSGVO',
+            'NOSQL',
+            'EMACS',
+            'ETHER',
+            'FORTH',
+            'FRAME',
+            'GATES',
+            'GENOM',
+            'GEOIP',
+            'HTTPS',
+            'INDEX',
+            'INTEL',
+            'KNUTH',
+            'LATEX',
+            'LAYER',
+            'LINUX',
+            'MODUL',
+            'NOTCH',
+            'NUDOL',
+            'OCAML',
+            'ORBIT',
+            'PAKET',
+            'PIXEL',
+            'RASPI',
+            'RAUTE',
+            'REGEX',
+            'SCALA',
+            'SCAPY',
+            'SHELL',
+            'SINUS',
+            'SKILL',
+            'SLASH',
+            'SWIFT',
+            'TIOBE',
+            'THEME',
+            'TOKEN',
+            'VIDEO',
+            'VIRUS',
+            'MACOS']
+word = random.choice(wordlist).upper()
 
 console.log("Wort: ", " ".join(list(word.upper())))
 
 guess = ""
 guess_no = 0
+key_objects = {}
 
 def display_guess():
     for i in range(5):
@@ -146,31 +151,127 @@ def evaluate_guess():
         console.log("evaluate: ", guess, word, pos, char, word[pos])
         if char == word[pos]:
             document.getElementById("t{:d}{:d}".format(guess_no, pos)).classList.add("nailedit")
-            continue
-        if char in word:
+            key_objects[char].classList.add("nailedit")
+        elif char in word:
             document.getElementById("t{:d}{:d}".format(guess_no, pos)).classList.add("somewhere")
+            key_objects[char].classList.add("somewhere")
         else:
             document.getElementById("t{:d}{:d}".format(guess_no, pos)).classList.add("nope")
+            key_objects[char].classList.add("nope")
 
-def keypress(e):
-    global guess, guess_no
-    console.log("Keypress: ", e.target.textContent, guess)
+def check_enter():
+    global guess, guess_no, wordlist
+    if len(guess) != 5:
+        return
+    if guess not in wordlist:
+        pyscript.write("error", "Das geratene Wort ist nicht nerdig genug!")
+        pyscript.write("info", "„{}“ steht nicht in der Wortliste.".format(guess))
+        document.getElementById("error").style = "display: visible;"
+        document.getElementById("info").style = "display: visible;"
+        return
+    evaluate_guess()
+    guess = ""
+    guess_no += 1
+
+def key_clicked(e):
+    global guess
+    if len(guess) >= 5 and len(e.target.textContent) == 1:
+        guess = guess[:5]
+        display_guess()
+        return
     match len(e.target.textContent):
         case 0:
             guess = guess[:-1]
         case 1:
             guess += e.target.textContent
         case _:
-            if len(guess) == 5:
-                evaluate_guess()
-                guess = ""
-                guess_no += 1
+            check_enter()
     display_guess()
 
-js_keypress = create_proxy(keypress)
+js_key_clicked = create_proxy(key_clicked)
 
-for key in document.getElementById("keyboard").childNodes:
-    key.addEventListener("click", js_keypress)
+for row in document.getElementById("keyboard").childNodes:
+    for key in row.childNodes:
+        key.addEventListener("click", js_key_clicked)
+        if len(key.textContent) == 1:
+            key_objects[key.textContent] = key
+
+def key_down(e):
+    global guess
+    if len(guess) >= 5 and len(e.key) == 1:
+        guess = guess[:5]
+        display_guess()
+        return
+    match e.key:
+        case "a": guess += "A"
+        case "A": guess += "A"
+        case "b": guess += "B"
+        case "B": guess += "B"
+        case "c": guess += "C"
+        case "C": guess += "C"
+        case "d": guess += "D"
+        case "D": guess += "D"
+        case "e": guess += "E"
+        case "E": guess += "E"
+        case "f": guess += "F"
+        case "F": guess += "F"
+        case "g": guess += "G"
+        case "G": guess += "G"
+        case "h": guess += "H"
+        case "H": guess += "H"
+        case "i": guess += "I"
+        case "I": guess += "I"
+        case "j": guess += "J"
+        case "J": guess += "J"
+        case "k": guess += "K"
+        case "K": guess += "K"
+        case "l": guess += "L"
+        case "L": guess += "L"
+        case "m": guess += "M"
+        case "M": guess += "M"
+        case "n": guess += "N"
+        case "N": guess += "N"
+        case "o": guess += "O"
+        case "O": guess += "O"
+        case "p": guess += "P"
+        case "P": guess += "P"
+        case "q": guess += "Q"
+        case "Q": guess += "Q"
+        case "r": guess += "R"
+        case "R": guess += "R"
+        case "s": guess += "S"
+        case "S": guess += "S"
+        case "t": guess += "T"
+        case "T": guess += "T"
+        case "u": guess += "U"
+        case "U": guess += "U"
+        case "v": guess += "V"
+        case "V": guess += "V"
+        case "w": guess += "W"
+        case "W": guess += "W"
+        case "x": guess += "X"
+        case "X": guess += "X"
+        case "y": guess += "Y"
+        case "Y": guess += "Y"
+        case "z": guess += "Z"
+        case "Z": guess += "Z"
+        case "ö": guess += "Ö"
+        case "Ö": guess += "Ö"
+        case "ä": guess += "Ä"
+        case "Ä": guess += "Ä"
+        case "ü": guess += "Ü"
+        case "Ü": guess += "Ü"
+        case "ß": guess += "ß"
+        case "ẞ": guess += "ß"
+        case "/": guess += "/"
+        case ";": guess += "B"
+        case "Backspace": guess = guess[:-1]
+        case "Enter": check_enter()
+    display_guess()
+
+js_key_down = create_proxy(key_down)
+
+document.onkeydown = js_key_down
 
 </py-script>
 </body>
