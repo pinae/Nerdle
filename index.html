@@ -138,26 +138,42 @@ console.log("Wort: ", " ".join(list(word.upper())))
 guess = ""
 guess_no = 0
 key_objects = {}
+accept_input = True
 
 def display_guess():
+    if guess_no > 5:
+        return
     for i in range(5):
         document.getElementById("t{:d}{:d}".format(guess_no, i)).textContent = "&nbsp;"
     for pos, char in enumerate(list(guess)):
         document.getElementById("t{:d}{:d}".format(guess_no, pos)).textContent = char
 
 def evaluate_guess():
-    global word, guess
+    global word, guess, guess_no, accept_input
+    correct_counter = 0
     for pos, char in enumerate(list(guess)):
-        console.log("evaluate: ", guess, word, pos, char, word[pos])
         if char == word[pos]:
             document.getElementById("t{:d}{:d}".format(guess_no, pos)).classList.add("nailedit")
             key_objects[char].classList.add("nailedit")
+            correct_counter += 1
         elif char in word:
             document.getElementById("t{:d}{:d}".format(guess_no, pos)).classList.add("somewhere")
             key_objects[char].classList.add("somewhere")
         else:
             document.getElementById("t{:d}{:d}".format(guess_no, pos)).classList.add("nope")
             key_objects[char].classList.add("nope")
+    if correct_counter >= 5:
+        pyscript.write("error", "Richtig geraten!")
+        pyscript.write("info", "„{}“ war das gesuchte Wort.".format(guess))
+        document.getElementById("error").style = "display: visible; color: darkgreen;"
+        document.getElementById("info").style = "display: visible;"
+        accept_input = False
+    elif guess_no >= 5:
+        pyscript.write("error", "Leider verloren.")
+        pyscript.write("info", "„{}“ war das gesuchte Wort.".format(word))
+        document.getElementById("error").style = "display: visible;"
+        document.getElementById("info").style = "display: visible;"
+        accept_input = False
 
 def check_enter():
     global guess, guess_no, wordlist
@@ -174,7 +190,9 @@ def check_enter():
     guess_no += 1
 
 def key_clicked(e):
-    global guess
+    global accept_input, guess
+    if not accept_input:
+        return
     if len(guess) >= 5 and len(e.target.textContent) == 1:
         guess = guess[:5]
         display_guess()
@@ -197,7 +215,9 @@ for row in document.getElementById("keyboard").childNodes:
             key_objects[key.textContent] = key
 
 def key_down(e):
-    global guess
+    global accept_input, guess
+    if not accept_input:
+        return
     if len(guess) >= 5 and len(e.key) == 1:
         guess = guess[:5]
         display_guess()
