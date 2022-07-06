@@ -78,67 +78,41 @@
 <py-env>
 </py-env>
 <py-script>
-from js import document, console
+from js import document, console, setTimeout
 from pyodide import create_proxy
+from pyodide.http import pyfetch
+from pyodide import JsException
 import random
 
-wordlist = ['ASCII',
-            'ADMIN',
-            'ARIAL',
-            'AUDIO',
-            'AZTEC',
-            'BASIC',
-            'BYTES',
-            'COBOL',
-            'CODEC',
-            'DENIC',
-            'DSGVO',
-            'NOSQL',
-            'EMACS',
-            'ETHER',
-            'FORTH',
-            'FRAME',
-            'GATES',
-            'GENOM',
-            'GEOIP',
-            'HTTPS',
-            'INDEX',
-            'INTEL',
-            'KNUTH',
-            'LATEX',
-            'LAYER',
-            'LINUX',
-            'MODUL',
-            'NOTCH',
-            'NUDOL',
-            'OCAML',
-            'ORBIT',
-            'PAKET',
-            'PIXEL',
-            'RASPI',
-            'RAUTE',
-            'REGEX',
-            'SCALA',
-            'SCAPY',
-            'SHELL',
-            'SINUS',
-            'SKILL',
-            'SLASH',
-            'SWIFT',
-            'TIOBE',
-            'THEME',
-            'TOKEN',
-            'VIDEO',
-            'VIRUS',
-            'MACOS']
-word = random.choice(wordlist).upper()
+wordlist = []
+word = None
 
-console.log("Wort: ", " ".join(list(word.upper())))
+async def load_wordlist():
+    try:
+        response = await pyfetch(
+            url="https://raw.githubusercontent.com/pinae/Nerdle/main/nerdle-begriffe.txt",
+            method="GET",
+            headers={"Content-Type": "text/plain"})
+        if response.ok:
+            data = await response.string()
+            console.log(data.split())
+            return data.split()
+    except JsException:
+        return None
+
+async def pick_word():
+    global wordlist, word, accept_input
+    wordlist = await load_wordlist()
+    word = random.choice(wordlist)
+    console.log("Wort: ", " ".join(list(word)))
+    accept_input = True
+
+setTimeout(create_proxy(pick_word), 0)
 
 guess = ""
 guess_no = 0
 key_objects = {}
-accept_input = True
+accept_input = False
 
 def display_guess():
     if guess_no > 5:
