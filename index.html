@@ -16,6 +16,7 @@
         <div id="error" style="display: none"></div>
         <div id="info" style="display: none"></div>
     </div>
+    <button id="newgame" style="display: none;">Neues Spiel</button>
     <div class="board">
         <div class="row">
             <div class="tile" id="t00">&nbsp;</div>
@@ -141,12 +142,14 @@ def evaluate_guess():
         pyscript.write("info", "„{}“ war das gesuchte Wort.".format(guess))
         document.getElementById("error").style = "display: visible; color: darkgreen;"
         document.getElementById("info").style = "display: visible;"
+        document.getElementById("newgame").style = "display: visible;"
         accept_input = False
     elif guess_no >= 5:
         pyscript.write("error", "Leider verloren.")
         pyscript.write("info", "„{}“ war das gesuchte Wort.".format(word))
         document.getElementById("error").style = "display: visible;"
         document.getElementById("info").style = "display: visible;"
+        document.getElementById("newgame").style = "display: visible;"
         accept_input = False
 
 def check_enter():
@@ -265,9 +268,27 @@ def key_down(e):
         case "Enter": check_enter()
     display_guess()
 
-js_key_down = create_proxy(key_down)
+document.onkeydown = create_proxy(key_down)
 
-document.onkeydown = js_key_down
+def new_game(event):
+    global word, guess, guess_no, accept_input
+    word = random.choice(wordlist)
+    guess = ""
+    guess_no = 0
+    console.log("Wort: ", " ".join(list(word)))
+    document.getElementById("error").style = "display: none;"
+    document.getElementById("info").style = "display: none;"
+    document.getElementById("newgame").style = "display: none;"
+    for line in range(6):
+        for column in range(5):
+            square = document.getElementById("t{:d}{:d}".format(line, column))
+            square.classList.remove("nailedit", "somewhere", "nope")
+            square.textContent = "&nbsp;"
+    for i in key_objects:
+        key_objects[i].classList.remove("nailedit", "somewhere", "nope")
+    accept_input = True
+
+document.getElementById("newgame").addEventListener("click", create_proxy(new_game))
 
 </py-script>
 </body>

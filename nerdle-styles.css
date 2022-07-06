@@ -88,3 +88,18 @@
 #keyboard .row div svg {
     display: inline-block;
 }
+
+button#newgame {
+    margin: 2em auto;
+    display: block;
+    background-color: lightgray;
+    padding: 1em;
+    border-radius: 0.7em;
+    box-shadow: 0.3em 0.3em 0.6em gray;
+    font-weight: bold;
+    font-size: 120%;
+}
+
+button#newgame:active {
+    box-shadow: 0.05em 0.05em 0.2em gray;
+}
