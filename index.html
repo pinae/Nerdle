@@ -119,34 +119,34 @@ def display_guess():
     if guess_no > 5:
         return
     for i in range(5):
-        document.getElementById("t{:d}{:d}".format(guess_no, i)).textContent = "&nbsp;"
+        document.getElementById(f"t{guess_no:d}{i:d}").textContent = "&nbsp;"
     for pos, char in enumerate(list(guess)):
-        document.getElementById("t{:d}{:d}".format(guess_no, pos)).textContent = char
+        document.getElementById(f"t{guess_no:d}{pos:d}").textContent = char
 
 def evaluate_guess():
     global word, guess, guess_no, accept_input
     correct_counter = 0
     for pos, char in enumerate(list(guess)):
         if char == word[pos]:
-            document.getElementById("t{:d}{:d}".format(guess_no, pos)).classList.add("nailedit")
+            document.getElementById(f"t{guess_no:d}{pos:d}").classList.add("nailedit")
             key_objects[char].classList.add("nailedit")
             correct_counter += 1
         elif char in word:
-            document.getElementById("t{:d}{:d}".format(guess_no, pos)).classList.add("somewhere")
+            document.getElementById(f"t{guess_no:d}{pos:d}").classList.add("somewhere")
             key_objects[char].classList.add("somewhere")
         else:
-            document.getElementById("t{:d}{:d}".format(guess_no, pos)).classList.add("nope")
+            document.getElementById(f"t{guess_no:d}{pos:d}").classList.add("nope")
             key_objects[char].classList.add("nope")
     if correct_counter >= 5:
         pyscript.write("error", "Richtig geraten!")
-        pyscript.write("info", "„{}“ war das gesuchte Wort.".format(guess))
+        pyscript.write("info", f"„{guess}“ war das gesuchte Wort.")
         document.getElementById("error").style = "display: visible; color: darkgreen;"
         document.getElementById("info").style = "display: visible;"
         document.getElementById("newgame").style = "display: visible;"
         accept_input = False
     elif guess_no >= 5:
         pyscript.write("error", "Leider verloren.")
-        pyscript.write("info", "„{}“ war das gesuchte Wort.".format(word))
+        pyscript.write("info", f"„{word}“ war das gesuchte Wort.")
         document.getElementById("error").style = "display: visible;"
         document.getElementById("info").style = "display: visible;"
         document.getElementById("newgame").style = "display: visible;"
@@ -158,7 +158,7 @@ def check_enter():
         return
     if guess not in wordlist:
         pyscript.write("error", "Das geratene Wort ist nicht nerdig genug!")
-        pyscript.write("info", "„{}“ steht nicht in der Wortliste.".format(guess))
+        pyscript.write("info", f"„{guess}“ steht nicht in der Wortliste.")
         document.getElementById("error").style = "display: visible;"
         document.getElementById("info").style = "display: visible;"
         return
@@ -264,6 +264,16 @@ def key_down(e):
         case "-": guess += "-"
         case ";": guess += ";"
         case ".": guess += "."
+        case "0": guess += "0"
+        case "1": guess += "1"
+        case "2": guess += "2"
+        case "3": guess += "3"
+        case "4": guess += "4"
+        case "5": guess += "5"
+        case "6": guess += "6"
+        case "7": guess += "7"
+        case "8": guess += "8"
+        case "9": guess += "9"
         case "Backspace": guess = guess[:-1]
         case "Enter": check_enter()
     display_guess()
@@ -281,7 +291,7 @@ def new_game(event):
     document.getElementById("newgame").style = "display: none;"
     for line in range(6):
         for column in range(5):
-            square = document.getElementById("t{:d}{:d}".format(line, column))
+            square = document.getElementById(f"t{line:d}{column:d}")
             square.classList.remove("nailedit", "somewhere", "nope")
             square.textContent = "&nbsp;"
     for i in key_objects:
