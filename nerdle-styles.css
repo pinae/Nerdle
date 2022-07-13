@@ -25,43 +25,35 @@
     text-align: center;
 }
 
-.board {
-    margin: 1em;
-    text-align: center;
+#board {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 0.2em;
+    grid-auto-rows: minmax(2em, auto);
+    margin: auto;
+    width: 21em;
 }
 
-.board .row {
-    margin-bottom: 0.2em;
-}
-
-.board .tile {
+#board div {
     border: 2px solid dimgray;
     font-size: 2em;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
+    width: 2em;
+    height: 2em;
     line-height: 2em;
     font-weight: bold;
     vertical-align: middle;
-    box-sizing: border-box;
-    width: 2em;
+    text-align: center;
 }
 
-.board .tile::before {
-    content: "";
-    display: inline-block;
-    padding-bottom: 100%;
-}
-
-.board .nailedit, #keyboard .row div.nailedit {
+#board .nailedit, #keyboard .row div.nailedit {
     background-color: green;
 }
 
-.board .somewhere, #keyboard .row div.somewhere {
+#board .somewhere, #keyboard .row div.somewhere {
     background-color: yellow;
 }
 
-.board .nope, #keyboard .row div.nope {
+#board .nope, #keyboard .row div.nope {
     background-color: gray;
 }
 

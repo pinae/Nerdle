@@ -17,50 +17,7 @@
         <div id="info" style="display: none"></div>
     </div>
     <button id="newgame" style="display: none;">Neues Spiel</button>
-    <div class="board">
-        <div class="row">
-            <div class="tile" id="t00">&nbsp;</div>
-            <div class="tile" id="t01">&nbsp;</div>
-            <div class="tile" id="t02">&nbsp;</div>
-            <div class="tile" id="t03">&nbsp;</div>
-            <div class="tile" id="t04">&nbsp;</div>
-        </div>
-        <div class="row">
-            <div class="tile" id="t10">&nbsp;</div>
-            <div class="tile" id="t11">&nbsp;</div>
-            <div class="tile" id="t12">&nbsp;</div>
-            <div class="tile" id="t13">&nbsp;</div>
-            <div class="tile" id="t14">&nbsp;</div>
-        </div>
-        <div class="row">
-            <div class="tile" id="t20">&nbsp;</div>
-            <div class="tile" id="t21">&nbsp;</div>
-            <div class="tile" id="t22">&nbsp;</div>
-            <div class="tile" id="t23">&nbsp;</div>
-            <div class="tile" id="t24">&nbsp;</div>
-        </div>
-        <div class="row">
-            <div class="tile" id="t30">&nbsp;</div>
-            <div class="tile" id="t31">&nbsp;</div>
-            <div class="tile" id="t32">&nbsp;</div>
-            <div class="tile" id="t33">&nbsp;</div>
-            <div class="tile" id="t34">&nbsp;</div>
-        </div>
-        <div class="row">
-            <div class="tile" id="t40">&nbsp;</div>
-            <div class="tile" id="t41">&nbsp;</div>
-            <div class="tile" id="t42">&nbsp;</div>
-            <div class="tile" id="t43">&nbsp;</div>
-            <div class="tile" id="t44">&nbsp;</div>
-        </div>
-        <div class="row">
-            <div class="tile" id="t50">&nbsp;</div>
-            <div class="tile" id="t51">&nbsp;</div>
-            <div class="tile" id="t52">&nbsp;</div>
-            <div class="tile" id="t53">&nbsp;</div>
-            <div class="tile" id="t54">&nbsp;</div>
-        </div>
-    </div>
+    <div id="board"></div>
     <div id="keyboard">
         <div class="row">
             <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div><div>9</div><div>0</div><div><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" class="game-icon"><path
@@ -84,6 +41,7 @@ from pyodide import create_proxy
 from pyodide.http import pyfetch
 from pyodide import JsException
 import random
+import re
 
 wordlist = []
 word = None
@@ -110,6 +68,15 @@ async def pick_word():
 
 setTimeout(create_proxy(pick_word), 0)
 
+tiles = []
+board = document.getElementById("board")
+for row in range(6):
+    tiles.append([])
+    for col in range(5):
+        tile = document.createElement("div")
+        board.appendChild(tile)
+        tiles[-1].append(tile)
+
 guess = ""
 guess_no = 0
 key_objects = {}
@@ -119,23 +86,23 @@ def display_guess():
     if guess_no > 5:
         return
     for i in range(5):
-        document.getElementById(f"t{guess_no:d}{i:d}").textContent = "&nbsp;"
+        tiles[guess_no][i].textContent = ""
     for pos, char in enumerate(list(guess)):
-        document.getElementById(f"t{guess_no:d}{pos:d}").textContent = char
+        tiles[guess_no][pos].textContent = char
 
 def evaluate_guess():
     global word, guess, guess_no, accept_input
     correct_counter = 0
     for pos, char in enumerate(list(guess)):
         if char == word[pos]:
-            document.getElementById(f"t{guess_no:d}{pos:d}").classList.add("nailedit")
+            tiles[guess_no][pos].classList.add("nailedit")
             key_objects[char].classList.add("nailedit")
             correct_counter += 1
         elif char in word:
-            document.getElementById(f"t{guess_no:d}{pos:d}").classList.add("somewhere")
+            tiles[guess_no][pos].classList.add("somewhere")
             key_objects[char].classList.add("somewhere")
         else:
-            document.getElementById(f"t{guess_no:d}{pos:d}").classList.add("nope")
+            tiles[guess_no][pos].classList.add("nope")
             key_objects[char].classList.add("nope")
     if correct_counter >= 5:
         pyscript.write("error", "Richtig geraten!")
@@ -199,83 +166,16 @@ def key_down(e):
         guess = guess[:5]
         display_guess()
         return
-    match e.key:
-        case "a": guess += "A"
-        case "A": guess += "A"
-        case "b": guess += "B"
-        case "B": guess += "B"
-        case "c": guess += "C"
-        case "C": guess += "C"
-        case "d": guess += "D"
-        case "D": guess += "D"
-        case "e": guess += "E"
-        case "E": guess += "E"
-        case "f": guess += "F"
-        case "F": guess += "F"
-        case "g": guess += "G"
-        case "G": guess += "G"
-        case "h": guess += "H"
-        case "H": guess += "H"
-        case "i": guess += "I"
-        case "I": guess += "I"
-        case "j": guess += "J"
-        case "J": guess += "J"
-        case "k": guess += "K"
-        case "K": guess += "K"
-        case "l": guess += "L"
-        case "L": guess += "L"
-        case "m": guess += "M"
-        case "M": guess += "M"
-        case "n": guess += "N"
-        case "N": guess += "N"
-        case "o": guess += "O"
-        case "O": guess += "O"
-        case "p": guess += "P"
-        case "P": guess += "P"
-        case "q": guess += "Q"
-        case "Q": guess += "Q"
-        case "r": guess += "R"
-        case "R": guess += "R"
-        case "s": guess += "S"
-        case "S": guess += "S"
-        case "t": guess += "T"
-        case "T": guess += "T"
-        case "u": guess += "U"
-        case "U": guess += "U"
-        case "v": guess += "V"
-        case "V": guess += "V"
-        case "w": guess += "W"
-        case "W": guess += "W"
-        case "x": guess += "X"
-        case "X": guess += "X"
-        case "y": guess += "Y"
-        case "Y": guess += "Y"
-        case "z": guess += "Z"
-        case "Z": guess += "Z"
-        case "ö": guess += "Ö"
-        case "Ö": guess += "Ö"
-        case "ä": guess += "Ä"
-        case "Ä": guess += "Ä"
-        case "ü": guess += "Ü"
-        case "Ü": guess += "Ü"
-        case "ß": guess += "ß"
-        case "ẞ": guess += "ß"
-        case "/": guess += "/"
-        case "-": guess += "-"
-        case ";": guess += ";"
-        case ".": guess += "."
-        case "0": guess += "0"
-        case "1": guess += "1"
-        case "2": guess += "2"
-        case "3": guess += "3"
-        case "4": guess += "4"
-        case "5": guess += "5"
-        case "6": guess += "6"
-        case "7": guess += "7"
-        case "8": guess += "8"
-        case "9": guess += "9"
-        case "Backspace": guess = guess[:-1]
-        case "Enter": check_enter()
+    regex_matches = re.match(r'^(Enter|Backspace|[a-zA-Z0-9/-;\.öäüÖÄÜßẞ])$', e.key)
+    if not regex_matches:
+        display_guess()
+        return
+    match regex_matches.groups():
+        case ('Backspace',): guess = guess[:-1]
+        case ('Enter',): check_enter()
+        case ('ẞ',) | ('ß',): guess += "ß"
+        case _: guess += e.key.upper()
+    console.log(guess, e.key, e.key.upper())
     display_guess()
 
 document.onkeydown = create_proxy(key_down)
@@ -289,11 +189,10 @@ def new_game(event):
     document.getElementById("error").style = "display: none;"
     document.getElementById("info").style = "display: none;"
     document.getElementById("newgame").style = "display: none;"
-    for line in range(6):
-        for column in range(5):
-            square = document.getElementById(f"t{line:d}{column:d}")
-            square.classList.remove("nailedit", "somewhere", "nope")
-            square.textContent = "&nbsp;"
+    for line in tiles:
+        for tile in line:
+            tile.classList.remove("nailedit", "somewhere", "nope")
+            tile.textContent = ""
     for i in key_objects:
         key_objects[i].classList.remove("nailedit", "somewhere", "nope")
     accept_input = True
