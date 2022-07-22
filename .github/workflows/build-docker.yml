@@ -1,0 +1,19 @@
+name: Build Nerdle
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/build-push-action@v1
+        with:
+          dockerfile: Dockerfile
+          username: pinae
+          password: ${{ secrets.GITHUB_TOKEN }}
+          repository: pinae/nerdle
+          registry: ghcr.io
+          tags: latest
